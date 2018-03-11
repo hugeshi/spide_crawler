@@ -10,11 +10,8 @@ class FoPipeline(object):
     def process_item(self, item, spider):
         title = item['title']
         tag = item['tag']
-        tag = item['url']
+        url = item['url']
         question = item['question']
-        answers = item['answers']
-        print "结果========================="
-        print len(answers)
-        print question
+        answers = '|'.join(item['answers']).replace(' ', '').replace('\n', '')
         return item
 

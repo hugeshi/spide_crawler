@@ -3,7 +3,7 @@
 import scrapy
 from fo.items import QuestionItem
 from scrapy.selector import Selector
-
+from bs4 import BeautifulSoup
 import sys
 
 reload(sys)
@@ -28,10 +28,10 @@ class S66law(scrapy.spiders.Spider):
     }
 
     def parse(self, response):
-        item = QuestionItem()
         selector = Selector(response)
         questions = selector.xpath('//td[@class="zx_lb_bt"]')
         for question in questions:
+            item = QuestionItem()
             tag = question.xpath('a[@class="zx_fl"]/text()').extract()[0]
             title = question.xpath('a[@class="zx_tm"]/@title').extract()[0]
             url = question.xpath('a[@class="zx_tm"]/@href').extract()[0]
@@ -43,10 +43,13 @@ class S66law(scrapy.spiders.Spider):
                                      callback=self.parse_sub_page, dont_filter=True)
             request.meta['item'] = item
             yield request
-        next_page = selector.xpath('//a[class="nextprev"]/@href').extract()
+        next_page = selector.xpath('//a[@class="nextprev"]/@href').extract()
         if next_page:
-            next_page = next_page[0]
-            print(self.url + str(next_page))
+            if len(next_page) == 2:
+                next_page = next_page[1]
+            else:
+                next_page = next_page[0]
+            print "parse next page ======================" + self.site_url + str(next_page)
             yield scrapy.Request(self.site_url + str(next_page), headers=self.headers,
                                  callback=self.parse, dont_filter=True)
 
@@ -54,12 +57,14 @@ class S66law(scrapy.spiders.Spider):
         item = response.meta['item']
         # parse response and populate item as required
         selector = Selector(response)
-        question = selector.xpath('//p[@class="f14 lh24 s-c666"]/text()').extract()[0]
+        text = selector.xpath('//p[@class="f14 lh24 s-c666"]').extract()[0]
+        soup = BeautifulSoup(text, 'lxml')
+        question = ''.join(soup.find_all(text=True))
         answers = selector.xpath('//p[@class="f14 lh26"]/text()').extract()
         answer_list = []
         for answer in answers:
             answer_list.append(answer)
         item['question'] = question
-        item['answers'] = answer_list
+        item['answers'] = '|'.join(answer_list).replace(' ', '').replace('\n', '')
         return item
 
