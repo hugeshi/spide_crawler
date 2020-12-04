@@ -17,9 +17,13 @@ class FoItem(scrapy.Item):
 
 
 class QuestionItem(scrapy.Item):
-    url = scrapy.Field()
-    tag = scrapy.Field()
     title = scrapy.Field()
+    subject = scrapy.Field()
+    replies = scrapy.Field()
+    views = scrapy.Field()
     question = scrapy.Field()
-    answers = scrapy.Field()
+    labels = scrapy.Field()
+    tags = scrapy.Field()
+    problems_ratings = scrapy.Field()
+    answers = scrapy.Field(serialize=lambda x: u'\007'.join(x))
     pass

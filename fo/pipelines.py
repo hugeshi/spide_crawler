@@ -4,14 +4,17 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
+import json
 
 
 class FoPipeline(object):
+    def __init__(self):
+        self.file = open('paypal-community-all.json', 'w')
+
     def process_item(self, item, spider):
-        title = item['title']
-        tag = item['tag']
-        url = item['url']
-        question = item['question']
-        answers = '|'.join(item['answers']).replace(' ', '').replace('\n', '')
+        content = json.dumps(dict(item), ensure_ascii=False) + "\n"
+        self.file.write(content)
         return item
 
+    def close_spider(self, spider):
+        self.file.close()

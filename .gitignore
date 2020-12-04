@@ -1,2 +1,11 @@
 *.pyc
 *.pyo
+.ipynb_checkpoints/
+__MACOSX/
+document/
+*.json
+*.csv
+.DS_Store
+.idea/
+*.ipynb
+corpus

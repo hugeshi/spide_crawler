@@ -71,6 +71,7 @@ class S110com(scrapy.spiders.Spider):
         answer_list = []
         for answer in answers:
             answer_list.append(answer)
+            break
         item['question'] = question
         item['answers'] = '|'.join(answer_list).replace(' ', '').replace('\n', '')
         return item
